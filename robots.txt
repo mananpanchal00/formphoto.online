@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Disallow nothing important – all public pages are indexable
+Sitemap: https://formphoto.in/sitemap.xml
