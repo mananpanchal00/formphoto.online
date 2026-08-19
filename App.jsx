@@ -20,8 +20,9 @@ import './App.css';
 function App() {
   return (
     <div className="app-container">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <Navbar />
-      <main className="main-content">
+      <main id="main-content" className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/photo-resizer" element={<PhotoResizer />} />

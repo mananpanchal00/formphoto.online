@@ -2,6 +2,9 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const BASE_URL = 'https://formphoto.in';
+const DEFAULT_IMAGE = `${BASE_URL}/og-image.svg`;
+
+const cleanTitle = (value) => value.replace(/\s*\|\s*FormPhoto\s*$/i, '').trim();
 
 const SEOHead = ({
   title,
@@ -11,39 +14,41 @@ const SEOHead = ({
   type = 'website',
   faqs = null,
   noindex = false,
+  image = DEFAULT_IMAGE,
+  publishedTime = null,
+  modifiedTime = null,
 }) => {
-  const url = `${BASE_URL}${path}`;
-  const fullTitle = title.includes('FormPhoto') ? title : `${title} | FormPhoto`;
-  const image = `${BASE_URL}/og-image.svg`;
+  const normalizedPath = path === '/' ? '/' : `/${path.replace(/^\/+|\/+$/g, '')}`;
+  const url = `${BASE_URL}${normalizedPath}`;
+  const fullTitle = /formphoto/i.test(title) ? title : `${title} | FormPhoto`;
+  const pageName = cleanTitle(fullTitle);
 
-  const webAppSchema = {
+  const webApplicationSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: 'FormPhoto',
     url: BASE_URL,
     applicationCategory: 'UtilitiesApplication',
+    applicationSubCategory: 'Image Editing',
     operatingSystem: 'Any',
+    browserRequirements: 'Requires a modern web browser with JavaScript enabled',
     description:
-      'Free online photo and signature resizer and image compressor for Indian forms, exams and applications. UPSC, SSC, IBPS, NEET, JEE, Passport and more.',
-    browserRequirements: 'Requires JavaScript',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
-    featureList: [
-      'Resize photos to exact pixels',
-      'Resize signatures to exact pixels',
-      'Compress images to a target KB size',
-      'Indian exam and application presets',
-      'Background remover',
-      'Image to PDF converter',
-      'PDF compressor',
-      'Client-side private processing',
-    ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: '1250',
-      bestRating: '5',
-      worstRating: '1',
+      'Free browser-based photo, signature, image compression and document tools for Indian forms, exams and applications.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'INR',
     },
+    featureList: [
+      'Photo resizing to exact pixel dimensions',
+      'Signature resizing for application forms',
+      'Image compression to target KB limits',
+      'Indian exam and application presets',
+      'Background removal',
+      'Image to PDF conversion',
+      'PDF compression',
+      'Client-side browser processing',
+    ],
   };
 
   const organizationSchema = {
@@ -51,9 +56,8 @@ const SEOHead = ({
     '@type': 'Organization',
     name: 'FormPhoto',
     url: BASE_URL,
-    logo: `${BASE_URL}/og-image.svg`,
-    description: 'Free photo tools for Indian government forms and exams.',
-    sameAs: [],
+    logo: DEFAULT_IMAGE,
+    description: 'Browser-based photo and document tools for Indian forms and applications.',
   };
 
   const websiteSchema = {
@@ -61,12 +65,21 @@ const SEOHead = ({
     '@type': 'WebSite',
     name: 'FormPhoto',
     url: BASE_URL,
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: `${BASE_URL}/photo-resizer`,
-      'query-input': 'required name=search_term_string',
-    },
+    inLanguage: 'en-IN',
   };
+
+  const webpageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: pageName,
+    url,
+    description,
+    isPartOf: { '@type': 'WebSite', name: 'FormPhoto', url: BASE_URL },
+    inLanguage: 'en-IN',
+  };
+
+  if (publishedTime) webpageSchema.datePublished = publishedTime;
+  if (modifiedTime) webpageSchema.dateModified = modifiedTime;
 
   const breadcrumbSchema = path
     ? {
@@ -77,12 +90,12 @@ const SEOHead = ({
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: BASE_URL,
+            item: `${BASE_URL}/`,
           },
           {
             '@type': 'ListItem',
             position: 2,
-            name: title.replace(' | FormPhoto', '').split(' - ')[0].split(' | ')[0],
+            name: pageName,
             item: url,
           },
         ],
@@ -107,7 +120,7 @@ const SEOHead = ({
 
   return (
     <Helmet>
-      <html lang="en" />
+      <html lang="en-IN" />
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
@@ -119,9 +132,9 @@ const SEOHead = ({
             : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
         }
       />
+      <meta name="googlebot" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
       <link rel="canonical" href={url} />
 
-      {/* Open Graph */}
       <meta property="og:type" content={type} />
       <meta property="og:site_name" content="FormPhoto" />
       <meta property="og:locale" content="en_IN" />
@@ -129,26 +142,29 @@ const SEOHead = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
-      <meta property="og:image:alt" content="FormPhoto – Free Photo Tools for Indian Forms" />
+      <meta property="og:image:alt" content="FormPhoto — free photo and signature tools for Indian forms" />
+      <meta property="og:image:type" content="image/svg+xml" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
 
-      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+      <meta name="twitter:image:alt" content="FormPhoto — free photo and signature tools for Indian forms" />
 
-      {/* Extra SEO */}
       <meta name="author" content="FormPhoto" />
-      <meta name="geo.region" content="IN" />
-      <meta name="geo.placename" content="India" />
-      <meta name="language" content="English" />
-      <meta name="revisit-after" content="3 days" />
+      <meta name="application-name" content="FormPhoto" />
       <meta name="theme-color" content="#6366f1" />
+      <meta name="format-detection" content="telephone=no" />
 
-      {/* Structured data */}
-      <script type="application/ld+json">{JSON.stringify(webAppSchema)}</script>
+      {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+      {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+
+      <script type="application/ld+json">{JSON.stringify(webApplicationSchema)}</script>
       <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
       <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
+      <script type="application/ld+json">{JSON.stringify(webpageSchema)}</script>
       {breadcrumbSchema && (
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       )}

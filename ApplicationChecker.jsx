@@ -318,7 +318,7 @@ export default function ApplicationChecker() {
       />
 
       <header className="checker-hero">
-        <h1>Application Upload Checker</h1>
+        <h1>{selected ? `${selected.name} Photo & Signature Upload Checker` : 'Application Photo & Signature Upload Checker'}</h1>
         <p>
           Select your exam or job application, upload the required files, and we&apos;ll check
           them against the size and dimension rules — then help you fix anything that&apos;s off.
